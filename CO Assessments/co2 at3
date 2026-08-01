@@ -1,0 +1,101 @@
+1)Deadlock Debugging:
+   Condition Causing Deadlock
+  Two processes (P1 and P2) share two resources (R1 and R2).
+   P1 locks R1 first and then tries to lock R2.
+   P2 locks R2 first and then tries to lock R1.
+   After waiting for 100 ms, both processes request the second resource.
+   P1 cannot acquire R2 because it is already locked by P2.
+   P2 cannot acquire R1 because it is already locked by P1.
+ 
+    lock(R1)
+    lock(R2)
+    Critical Section
+    unlock(R2)
+    unlock(R1)
+    Process P2:
+    lock(R1)
+    lock(R2)
+    Critical Section
+     unlock(R2)
+     unlock(R1)
+     Optimization to Eliminate Deadlock :
+      Follow a fixed resource ordering.
+    Both processes should lock resources in the same order (R1 → R2).
+    This removes the circular wait condition.
+    Deadlock is avoided without changing the process logic.
+Cause: Circular wait due to different lock order.
+Solution: Use the same resource locking order for all processes.
+
+2)Cause of Low CPU Utilization
+CPU utilization is only 30% even though processes are ready.
+The scheduler log shows repeated transitions:
+Ready → Waiting → Ready → Waiting → Ready
+This indicates that processes are I/O-bound.
+Processes execute for a short time and then wait for I/O operations.
+While waiting for I/O, the CPU remains idle.
+Frequent state changes increase scheduling overhead.
+System-Level Optimization
+Increase the degree of multiprogramming so another process can use the CPU while one is waiting.
+Use asynchronous or buffered I/O to reduce waiting time.
+Improve CPU scheduling by selecting CPU-bound processes when I/O-bound processes are waiting.
+Reduce unnecessary context switching.
+Optimize I/O devices to decrease waiting time.
+Result
+CPU remains busy most of the time.CPU utilization increases.Throughput improves.Overall system performance becomes better.
+
+3). Memory Bottleneck Debugging (10 Marks)
+Given
+Code = 5 MB
+Heap = 150 MB
+Stack = 1 MB per thread
+Number of threads = 25
+Physical RAM = 2 GB
+Memory Issue
+Total stack memory = 25 × 1 MB = 25 MB
+Total memory used = 5 + 150 + 25 = 180 MB
+Memory Issue
+Total stack memory = 25 × 1 MB = 25 MB.
+Total memory used = 5 + 150 + 25 = 180 MB.
+The program frequently experiences page faults.
+Many threads access different memory pages.
+Large heap usage causes poor memory locality.
+CPU waits while required pages are loaded from disk.
+This slows down program execution.
+Result
+Fewer page faults.Faster memory access.Better CPU performance.
+
+4)Root Cause of Starvation
+The scheduler uses a Multilevel Queue Scheduling algorithm.
+There are three queues:
+Q1: Interactive (Highest Priority)
+Q2: System
+Q3: Batch (FCFS)
+Process P5 is in Q3 (Batch Queue).
+The CPU always gives priority to Q1 and Q2 processes.
+Whenever a process arrives in Q1 or Q2, P5 is postponed.
+As a result, P5 waits for a very long time without getting CPU time.
+This condition is called Starvation (Indefinite Blocking).
+The process remains ready but is never executed.
+Optimization to Ensure Fairness
+Use the Aging Technique.
+Gradually increase the priority of processes waiting for a long time.
+Move P5 from Q3 to a higher-priority queue after a certain waiting time.
+This guarantees that every process eventually gets CPU time.
+Aging removes starvation and improves fairness.
+Result
+Starvation is eliminated.All processes receive CPU time.System fairness and performance improve.
+
+5). Context-Switch Overhead Debugging 
+Cause of High Context Switching
+The server performs 20,000 context switches per second.
+The average CPU burst time is 2 ms.
+The scheduler time quantum is only 1 ms.
+Processes are preempted before completing their CPU burst.
+Very frequent I/O operations cause processes to enter the waiting state repeatedly.
+Each preemption and I/O completion results in another context switch.
+Excessive context switching wastes CPU time and increases overhead.
+This reduces system performance and throughput.
+Use efficient thread scheduling to minimize switching overhead.
+
+Result
+Number of context switches decreases.CPU overhead is reduced.CPU utilization increases.System throughput and overall performance improve.
