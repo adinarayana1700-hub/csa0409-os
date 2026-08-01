@@ -1,0 +1,12 @@
+#include <stdio.h>
+
+int main() {
+    char msg[100];
+
+    printf("Enter Message: ");
+    scanf("%s", msg);
+
+    printf("Received Message: %s\n", msg);
+
+    return 0;
+}
