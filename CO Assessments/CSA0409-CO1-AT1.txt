@@ -1,0 +1,112 @@
+1)(a)A Multi-user Operating System
+       It allows multiple users at a time 
+      CPU, memory, and files
+      Linux is a multi-user operating system.
+      storage management,processor management,multi user management
+(b)process scheduling,process synchronization,process mangement
+(c)pseudo code:
+     start
+     create file like
+       #include<stdio.h> and <unistd.h>
+       use fork() datatype ;
+       process id(pid) for child process;
+       print child process
+       if(pid<0)
+          display"invalid";
+       else if(pid==0)
+          display "chlid process";
+       else 
+          display"parent process";
+        stop
+2(a)open()
+  write()
+  read()
+  close()
+(b) Explain the purpose of any two file management system calls.
+   1. open()
+    Opens an existing file to creates a new file.
+    Returns a file descriptor.
+  2. write()
+     Writes data into the file.
+(c)pseudo code: 
+   START
+    Open "student.txt" in Create and Write mode
+    IF
+        file opened successfully 
+  THEN
+       Write "Mohith" into the file
+    Close the file
+  ELSe
+      Display "File cannot be created"
+  END IF
+  STOP
+  
+3)
+(a) List the system calls required to complete this operation:
+   open()
+   read()
+   write()
+   close()
+(b) read()
+    Reads data from the source file.
+  write()
+   Writes data into the destination file.
+ (c)pseudo code:
+      START
+  Open source file in Read mode
+  Open destination file in Create and Write mode
+  WHILE data is available in source file DO
+   Read data 
+    insert data into destination file
+END WHILE
+   Close source file
+    Close destination file
+  Display "File copied successfully"
+  STOP
+4(a)
+   fork()
+    Creates a new child process.
+   exec()
+    Replaces the current process with another program.
+(b) 
+      role of the  wait() system call.
+             wait() makes the parent process wait until the child process defore  finishes execution.
+        It prevents the creation of  processes.
+  (c)pseudo code:
+START
+     using fork () data type to create chid process
+    IF
+      Display "Child process is executing"
+using exec()
+      Execute another program using exec()
+ IF exec() fails
+        THEN Display "Program execution failed"
+      END IF
+   ELSE
+      Display "Parent process is waiting"
+ Wait until child process completes using wait()
+ Display "Child process completed"
+   STOP
+5)
+(a)  File management is one of the most important functions of an Operating System.
+    Importance:
+     Stores data on secondary storage device
+     this operative system used to 
+      create,
+      rename,
+      delete,
+     copy, .
+(b)
+open()
+  Opens an existing file or creates a new file.
+  Returns a file descriptor used for file operations.
+  Specifies the access mode (read, write, or read/write).
+close()
+   Closes an opened file.
+(c)   pseudo code:
+   start 
+    create one "student.txt "file
+   after open that file 
+   display the following data
+  close
+  stop
