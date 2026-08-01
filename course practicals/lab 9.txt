@@ -1,0 +1,14 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char data[100];
+
+    printf("Enter a message: ");
+    scanf("%s", data);
+
+    printf("Data Written: %s\n", data);
+    printf("Data Read: %s\n", data);
+
+    return 0;
+}
