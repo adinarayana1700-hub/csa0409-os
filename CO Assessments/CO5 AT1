@@ -1,0 +1,244 @@
+1)
+ given
+The server has 50 GB total storage.
+It has  System logs → can grow continuously.
+User files → documents and personal data.
+Application data → files created by applications.,
+First, I will divide the storage into different partitions for different purposes:
+/ – 10 GB: Linux operating system files.
+/var – 12 GB: System logs and other changing data.
+/home – 15 GB: User files.
+/opt – 7 GB: Application files.
+/boot – 1 GB: Boot files.
+Swap – 5 GB: Used when RAM is not enough.
+The important part is /var, because system logs are stored in /var/log. Logs can grow very quickly and fill the disk.
+So, I will use logrotate to automatically manage the logs. It will:
+Rotate old logs.
+Compress old logs.
+Remove unnecessary old logs.
+Keep log usage below 10 GB.
+We can check the storage using:
+Bash   df -h
+We can check the log size using:
+Bash    du -sh /var/log
+We can manage the logs using:
+Bash  sudo logrotate -f /etc/logrotate.conf
+Final idea
+My main goal is to prevent the server from becoming full.
+ By separating /var, using logrotate, compressing old logs, and monitoring disk space, the logs 
+      will stay within the 10 GB limit and critical services can continue running without interruption.
+
+2)Linux system is doing heavy CPU work and is suffering because of frequent context switching.:
+   Context switching means the CPU keeps changing from one process/thread to another. Too much switching creates overhead and reduces performance.
+  Since hardware cannot be upgraded, we need to improve performance using Linux kernel-level techniques.
+   Scheduler tuning
+  Kernel modules
+  Real-time processing
+  Reducing unnecessary context switching
+ 1. Scheduler tuning
+     The Linux CPU scheduler decides which process gets CPU time.For heavy workloads, we can tune scheduling so important processes get appropriate CPU priority.
+     Check current scheduling
+     Bash     ps -eo pid,ni,pri,cmd
+    Increase priority of an important process
+    Bash
+    sudo renice -n -5 -p PID
+    Here, PID is the process ID.
+    For example:
+    Bash
+    sudo renice -n -5 -p 1234
+    This gives the process higher priority.
+
+2. CPU Affinity
+     We can assign a process to specific CPU cores. This can reduce unnecessary movement of processes between CPUs.
+     Check CPU information:
+     Bash  (lscpu)
+     Run a process on a particular CPU:
+    Bash (taskset -c 0 ./program)
+    Here, CPU core 0 is used for the program.
+3. Real-time scheduling
+    Because the question says real-time processing must be supported, Linux real-time scheduling can be used.
+ For example:
+    Bash ( sudo chrt -f 50 ./program)
+ Here:
+  chrt → changes scheduling policy.
+  -f → First-In-First-Out real-time scheduling.
+   50 → real-time priority.
+  This gives the process a high scheduling priority.
+  Careful: Very high real-time priority can prevent other important processes from getting CPU time, so it should be used carefully.
+ 4. Kernel modules
+    A kernel module is a piece of code that can be added to the Linux kernel to provide or modify functionality without rebuilding the entire kernel.
+   Check loaded modules:
+  Bash
+  lsmod
+   Load a module:
+  Bash
+  sudo modprobe module_name
+  Remove a module:
+  Bash
+  sudo modprobe -r module_name
+   For this problem, suitable kernel modules can provide optimized drivers or specialized functionality for the workload.
+
+5. Reduce unnecessary context switching
+We can monitor context switches using:
+Bash
+vmstat 1
+Example:
+procs    memory                 system
+ r  b   swpd   free   buff  cache   in   cs
+ 4  0      0  2048    200   4096  120  850
+cs represents context switches per second.
+                       lscpu
+                        top
+                      vmstat 1
+                      sudo renice -n -5 -p PID
+                      taskset -cp 0 PID
+                        lsmod
+
+3)The administrator has:
+1 million log entries
+Only shell scripting can be used
+The script must finish within 2 minutes
+Therefore, the script must process the logs efficiently.
+For example, suppose the log file is:access.log
+We want to find things such as:
+Number of errors
+Number of successful requests
+Most common IP addresses
+2. Efficient shell script
+Suppose the log format is:
+192.168.1.10 GET /index.html 200
+192.168.1.20 GET /login 404
+192.168.1.10 GET /home 200
+192.168.1.30 GET /data 500
+We can use awk, sort, uniq, and grep.
+Bash
+#!/bin/bash
+LOGFILE="access.log"
+echo "Processing log file..."
+echo "Total entries:"
+wc -l < "$LOGFILE"
+echo "Error entries:"
+awk '$4 >= 400 {count++} END {print count+0}' "$LOGFILE"
+echo "Successful entries:"
+awk '$4 >= 200 && $4 < 400 {count++} END {print count+0}' "$LOGFILE"
+echo "Top 10 IP addresses:"
+awk '{print $1}' "$LOGFILE" | sort | uniq -c | sort -nr | head -10
+echo "Processing completed."
+3. Why these commands are used?
+wc -l
+Bash
+wc -l < access.log
+Counts the number of log entries quickly.
+Advantage: Very fast and simple.
+awk
+Bash
+awk '$4 >= 400 {count++} END {print count+0}' access.log
+Processes the file line by line in one pass.
+Advantage: Better than writing a shell while loop for every log entry.
+sort
+Bash
+sort
+Sorts the data so duplicate values can be grouped.
+uniq
+Bash
+uniq -c
+Counts repeated values.
+head
+Bash
+head -10
+Displays only the first 10 results instead of processing/displaying unnecessary output.
+4. Why avoid a shell loop?
+A slow approach would be:
+Bash
+while read line
+do
+    echo "$line"
+done < access.log
+For 1 million lines, repeatedly invoking shell operations can create significant overhead.
+Instead, use tools such as:
+awk
+grep
+sort
+uniq
+wc
+These are optimized for processing large amounts of text.
+5. Even better: process everything with awk
+For simple statistics, we can reduce the number of separate passes over the file:
+Bash
+awk '
+{
+    total++
+    if ($4 >= 400)
+        errors++
+    if ($4 >= 200 && $4 < 400)
+        success++
+    ip[$1]++
+}
+END {
+    print "Total:", total
+    print "Errors:", errors
+    print "Success:", success
+}' access.log
+This is efficient because awk processes the file sequentially instead of repeatedly reading the entire file.
+It should be less than 2 minutes.
+
+Q4) Faulty Process Using 90% CPU
+A background process is using 90% of the CPU, which can make the Linux system slow and affect other services.
+First, I would identify the process using:
+Bash
+top
+or:
+Bash
+ps aux --sort=-%cpu | head
+Suppose the faulty process has PID 2456.
+I would check the process:
+Bash
+ps -fp 2456
+Before stopping it, I would make sure it is not a critical service.
+If it is a non-critical process, I can reduce its priority:
+Bash
+sudo renice 10 -p 2456
+If it is confirmed to be faulty, I can stop it:
+Bash
+kill 2456
+If it does not stop normally, I can use:
+Bash
+kill -9 2456
+Finally, I would check CPU usage again:
+Bash
+top
+The process should not be killed immediately. First, I would identify it, check whether it is critical, monitor it, and then control it.
+ If it is faulty and non-critical, I can reduce its priority or stop it without restarting the system. This protects critical services from being affected. 
+
+5)Resource Allocation for 5 Virtual Machines
+The physical server has 16 GB RAM.
+There are 5 virtual machines, and each VM needs at least 2 GB.
+So:
+5 VMs × 2 GB = 10 GB
+The host operating system needs:
+Host OS = 4 GB
+Therefore:
+10 GB + 4 GB = 14 GB
+Total available RAM is:
+16 GB
+So the remaining RAM is:
+16 GB - 14 GB = 2 GB
+Proposed allocation
+Resource	RAM
+VM 1	2 GB
+VM 2	2 GB
+VM 3	2 GB
+VM 4	2 GB
+VM 5	2 GB
+Host OS	4 GB
+Remaining	2 GB
+Total	16 GB
+Each VM receives its required minimum of 2 GB, while the host receives 4 GB.
+The remaining 2 GB should be kept as a safety/reserve amount rather than immediately assigning it to another VM.
+ This helps the host and virtual machines operate smoothly.
+The minimum requirement is:
+5 × 2 GB = 10 GB for VMs
+plus 4 GB for the host, giving 14 GB. Since the server has 16 GB, 2 GB remains available as reserve.
+ This allocation satisfies the requirements without exceeding the available RAM.
+
+
