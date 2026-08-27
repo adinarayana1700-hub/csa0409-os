@@ -1,0 +1,151 @@
+PSEUDOCODE WRITING :
+1)  File System Space Management Algorithm
+   BEGIN
+    SET threshold = 80%
+    SET critical_threshold = 90%
+    WHILE system is running DO
+        usage = GET_DISK_USAGE()
+        IF usage > threshold THEN
+            DISPLAY "Warning: Disk usage is above 80%"
+            IDENTIFY all log_files
+            SORT log_files BY size DESCENDING
+            FOR each file IN log_files DO
+                IF file is old THEN
+                    DELETE file
+                    DISPLAY "Old log file delete 
+                ELSE
+                    COMPRESS file
+                    DISPLAY "Log file compressed"
+                ENDIF
+                usage = GET_DISK_USAGE()
+                IF usage <= threshold THEN
+                    DISPLAY "Disk usage is back to normal"
+                    BREAK
+                ENDIF
+            ENDFOR
+            IF usage > critical_threshold THEN
+                DISPLAY "CRITICAL: Disk space is almost full"
+                SEND ALERT to system administrator
+            ENDIF
+        ELSE
+            DISPLAY "Disk usage is normal"
+        ENDIF
+END
+Keep checking how much disk space is being used.If it goes above 80%, take action.
+Find the biggest and oldest log files.Delete, compress, or rotate unnecessary log files.
+This helps prevent the disk from becoming full.
+
+2)Priority-Based CPU Scheduling
+BEGIN
+INPUT process_list
+    FOR each process IN process_list DO
+        SET process status = READY
+        RECORD process priority
+        RECORD process burst_time
+    ENDFOR
+    SORT process_list BY priority (highest first)
+        SELECT process WITH highest priority
+        IF process is READY THEN
+            ALLOCATE CPU time to selected process
+            EXECUTE process for a fixed time slice
+            REDUCE remaining burst_time
+            IF process is completed THEN4
+                DISPLAY "Process completed"
+            ELSE
+                REDUCE priority slightly
+                INCREASE priority of waiting processes
+                ADD process back to process_list
+            ENDIF
+        ENDIF
+        SORT process_list BY priority (highest first)
+    ENDWHILE
+    DISPLAY "All processes completed"
+    DISPLAY "CPU scheduling finished"
+Check all the processes waiting for the CPU.Give the CPU first to the high-priority process.
+Run the process for some CPU time.If it is not finished, put it back in the waiting list.
+This helps the CPU work efficiently and avoids long waiting.
+
+3)RAM Resource Management for Virtual Machines
+BEGIN
+    SET total_RAM = 16GB
+    SET host_reserved = 4GB
+    available_RAM = total_RAM - host_reserved  INPUT number_of_VMs
+ SET min_RAM = 2GB
+  FOR i = 1 TO number_of_VMs DO
+   IF available_RAM >= min_RAM THEN
+            ALLOCATE min_RAM to VM[i]
+            available_RAM = available_RAM - min_RAM
+            DISPLAY "RAM allocated to VM", i
+            DISPLAY "Remaining RAM =", available_RAM
+        ELSE
+            DISPLAY "Not enough RAM for VM", i
+            DISPLAY "VM cannot be started"
+        ENDIF
+    ENDFOR
+    IF available_RAM > 0 THEN
+        DISTRIBUTE remaining RAM to VMs
+        DISPLAY "RAM distribution completed"
+   ELSE
+        DISPLAY "All available RAM has been allocated"
+END
+Start with 16 GB of total RAM.Keep 4 GB for the main/host system.
+Give each VM at least 2 GB RAM.Check how much RAM is still available.
+This helps all VMs run smoothly without using too much RAM.
+
+4)Hypervisor Selection
+BEGIN
+ INPUT performance_required
+    INPUT budget
+    INPUT hardware_access
+    IF performance_required = HIGH AND hardware_access = TRUE THEN
+        SELECT Type_1_Hypervisor
+        DISPLAY "Type 1 selected for better performance"
+    ELSE IF budget = LOW THEN
+        DISPLAY "Type 2 selected for lower cost"
+    ELSE
+        SELECT Type_1_Hypervisor
+        DISPLAY "Type 1 selected for efficient resource usage"
+    ENDIF
+    PRINT selected_hypervisor
+END
+Check the required system performance.Check whether direct hardware access is available.
+For high performance, choose a Type 1 hypervisor.If the budget is low, choose a Type 2 hypervisor.
+The selection helps improve performance and resource usage.
+
+5) CPU and Memory Resource Management
+BEGIN
+    INPUT application_list
+    FOR each app IN application_list DO
+        CREATE cgroup for app
+        SET CPU limit for app
+        SET memory limit for app
+        ASSIGN app process to cgroup
+        MONITOR CPU usage
+        MONITOR memory usage
+        IF CPU usage > CPU limit THEN
+            REDUCE CPU usage
+        ENDIF
+        IF memory usage > memory limit THEN
+            REDUCE memory usage
+        ENDIF
+    ENDFOR
+    DISPLAY "Resource management completed"
+END
+Take the list of applications.Create a cgroup for each application.
+Set a limit for CPU usage.Set a limit for memory usage
+Monitor the applications and control excessive usage to keep the system running smoothly.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
