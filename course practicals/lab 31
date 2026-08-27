@@ -1,0 +1,18 @@
+Two-Level Directory
+#include <stdio.h>
+int main()
+{
+    char user[2][20] = {"User1", "User2"};
+    char files[2][3][20] = {
+        {"file1.txt", "file2.txt", "file3.txt"},
+        {"data1.txt", "data2.txt", "data3.txt"}
+    };
+    int i, j;
+    for(i = 0; i < 2; i++)
+    {
+        printf("\n%s Directory:\n", user[i]);
+        for(j = 0; j < 3; j++)
+            printf("%s\n", files[i][j]);
+    }
+    return 0;
+}
