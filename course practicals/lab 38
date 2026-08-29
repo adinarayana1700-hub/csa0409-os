@@ -1,0 +1,27 @@
+UNIX I/O System Calls
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+int main()
+{
+    int fd;
+    struct stat s;
+    DIR *dir;
+    struct dirent *d;
+    fd = open("file.txt", O_CREAT | O_RDWR, 0644);
+    printf("File opened successfully\n");
+    printf("File descriptor: %d\n", fcntl(fd, F_GETFD));
+    lseek(fd, 0, SEEK_SET);
+    printf("File position changed using lseek()\n");
+    stat("file.txt", &s);
+    printf("File size: %ld bytes\n", s.st_size);
+    dir = opendir(".");
+    printf("\nDirectory contents:\n");
+    while((d = readdir(dir)) != NULL)
+        printf("%s\n", d->d_name);
+    close(fd);
+    closedir(dir);
+    return 0;
+}
