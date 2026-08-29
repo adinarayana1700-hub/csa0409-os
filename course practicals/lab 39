@@ -1,0 +1,21 @@
+ File Management Operations
+#include <stdio.h>
+int main()
+{
+    FILE *fp;
+    char ch;
+    fp = fopen("file.txt", "w");
+    fprintf(fp, "Hello File Management");
+    fclose(fp);
+    printf("File created and data written.\n");
+    fp = fopen("file.txt", "r");
+    printf("File data: ");
+    while((ch = fgetc(fp)) != EOF)
+        putchar(ch);
+    fclose(fp);
+    rename("file.txt", "newfile.txt");
+    printf("\nFile renamed successfully.\n");
+    remove("newfile.txt");
+    printf("File deleted successfully.\n");
+    return 0;
+}
